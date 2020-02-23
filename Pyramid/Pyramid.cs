@@ -5,7 +5,7 @@ namespace Pyramid
 {
     public class Pyramid
     {
-        private Point osn0, osn1, osn2, osn3, v;
+        private Point _base0, _base1, _base2, _base3, _top;
 
         public Pyramid(Point[] points)
         {
@@ -13,43 +13,47 @@ namespace Pyramid
             {
                 throw new Exception("Ti sho, dibil voobsche, matematicheskoe ubogzestvo");
             }
+            
+            Init(points);
+            
+            var matrix = new Matrix(new []{_top - _base0, _top - _base1, _top - _base2});
+            if (Math.Abs(matrix.Determinant) < double.Epsilon)
+            {
+                throw new Exception("The top lies on the same plane with the base");
+            }
+        }
 
-            Matrix matrix;
-            Point[] p;
+        // Divide the quadrangle into two triangles and calculate the areas using the Heron formula
+        public double Square => Util.GetTriangleSquare(_base0, _base1, _base2) + Util.GetTriangleSquare(_base1, _base2, _base3);
+        
+        public double Volume
+        {
+            get
+            {
+                var a = (_base2.Y - _base1.Y) * (_base3.Z - _base1.Z) - (_base2.Z - _base1.Z) * (_base3.Y - _base1.Y);
+                var b = (_base2.Z - _base1.Z) * (_base3.X - _base1.X) - (_base2.X - _base1.X) * (_base3.Z - _base1.Z);
+                var c = (_base2.X - _base1.X) * (_base3.Y - _base1.Y) - (_base2.Y - _base1.Y) * (_base3.X - _base1.X);
+                var d = -_base1.X * a - _base1.Y * b - _base1.Z * c;
+                var h = Math.Abs(a * _top.X + b * _top.Y + c * _top.Z + d) / Math.Sqrt(a * a + b * b + c * c);
+                return Square * h / 3;
+            }
+        }
+
+        private void Init(Point[] points)
+        {
             for (var i = 0; i < 5; i++)
             {
-                p = points.Where((point, i1) => i1 != i).ToArray();
-                matrix = new Matrix(new[] {p[0] - p[1], p[0] - p[2], p[0] - p[3]});
-                if (Math.Abs(matrix.Determinant) > double.Epsilon) continue;
-                osn0 = p[0];
-                osn1 = p[1];
-                osn2 = p[2];
-                osn3 = p[3];
-                v = points[i];
-                break;
-            }
-        }
-
-        double Square
-        {
-            get
-            {
-                var v1 = new Vector(osn0, osn1);
-                var v2 = new Vector(osn0, osn2);
-                return v1.Length * v2.Length * Util.GetAngleBetweenVectors(v1, v2) / 2;
-            }
-        }
-
-        double Volume
-        {
-            get
-            {
-                var A = (osn2.Y - osn1.Y) * (osn3.Z - osn1.Z) - (osn2.Z - osn1.Z) * (osn3.Y - osn1.Y);
-                var B = (osn2.Z - osn1.Z) * (osn3.X - osn1.X) - (osn2.X - osn1.X) * (osn3.Z - osn1.Z);
-                var C = (osn2.X - osn1.X) * (osn3.Y - osn1.Y) - (osn2.Y - osn1.Y) * (osn3.X - osn1.X);
-                var D = -osn1.X * A - osn1.Y * B - osn1.Z * C;
-                var h = Math.Abs(A * v.X + B * v.Y + C * v.Z + D) / Math.Sqrt(A * A + B * B + C * C);
-                return Square * h / 3;
+                var p = points.Where((point, i1) => i1 != i).ToArray();
+                var matrix = new Matrix(new[] {p[0] - p[1], p[0] - p[2], p[0] - p[3]});
+                
+                if (Math.Abs(matrix.Determinant) < double.Epsilon)
+                {
+                    _base0 = p[0];
+                    _base1 = p[1];
+                    _base2 = p[2];
+                    _base3 = p[3];
+                    _top = points[i];
+                }
             }
         }
     }
