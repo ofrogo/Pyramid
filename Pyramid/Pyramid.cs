@@ -7,15 +7,15 @@ namespace Pyramid
 {
     public class Pyramid
     {
-        protected internal Point Base0 { get; }
+        protected internal Point Base0 { get; set; }
 
-        protected internal Point Base1 { get; }
+        protected internal Point Base1 { get; set; }
 
-        protected internal Point Base2 { get; }
+        protected internal Point Base2 { get; set; }
 
-        protected internal Point Base3 { get; }
+        protected internal Point Base3 { get; set; }
 
-        protected internal Point Top { get; }
+        protected internal Point Top { get; set; }
 
         public Pyramid(Point[] points)
         {
@@ -26,7 +26,7 @@ namespace Pyramid
 
             if (Util.IsOneLine(points))
             {
-                throw new Exception("All points can't lie on one line.");
+                throw new Exception("All points can't lie on one line!");
             }
 
             Matrix matrix;
@@ -89,6 +89,12 @@ namespace Pyramid
             {
                 return JsonSerializer.Deserialize<PyramidProvider>(fstream.ReadToEnd()).GetPyramid();
             }
+        }
+
+        public override string ToString()
+        {
+            return
+                $"Pyramid: base:[{Base0}, {Base1}, {Base2}, {Base3}], top:[{Top}], volume:[{Volume}], base square:[{Square}]";
         }
     }
 }

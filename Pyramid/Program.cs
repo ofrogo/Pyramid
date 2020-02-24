@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Text.Json;
 
 namespace Pyramid
 {
@@ -8,8 +7,9 @@ namespace Pyramid
         public static void Main(string[] args)
         {
             var p = new Pyramid(new []{new Point(0,0,0), new Point(0,1,0), new Point(1, 1,0), new Point(1,0,0), new Point(1,1,1), });
-            var serialize = JsonSerializer.Serialize(p);
-            Console.WriteLine(serialize);
+            p.SaveToFile("test.json");
+            var d = Pyramid.LoadFromFile("test.json");
+            Console.WriteLine(d.ToString());
         }
     }
 }
