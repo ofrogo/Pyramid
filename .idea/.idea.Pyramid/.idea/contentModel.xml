@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ContentModelStore">
     <e p="C:\Users\danyk\.Rider2019.2\system\extResources" t="IncludeRecursive" />
@@ -9,6 +9,7 @@
         <e p="bin" t="ExcludeRecursive" />
         <e p="Matrix.cs" t="Include" />
         <e p="obj" t="ExcludeRecursive" />
+        <e p="packages.config" t="Include" />
         <e p="Point.cs" t="Include" />
         <e p="Program.cs" t="Include" />
         <e p="Properties" t="Include">
@@ -16,6 +17,7 @@
         </e>
         <e p="Pyramid.cs" t="Include" />
         <e p="Pyramid.csproj" t="IncludeRecursive" />
+        <e p="PyramidProvider.cs" t="Include" />
         <e p="Util.cs" t="Include" />
         <e p="Vector.cs" t="Include" />
       </e>

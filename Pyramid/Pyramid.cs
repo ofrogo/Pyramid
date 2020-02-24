@@ -1,59 +1,93 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
+using System.Text.Json;
 
 namespace Pyramid
 {
     public class Pyramid
     {
-        private Point _base0, _base1, _base2, _base3, _top;
+        protected internal Point Base0 { get; }
+
+        protected internal Point Base1 { get; }
+
+        protected internal Point Base2 { get; }
+
+        protected internal Point Base3 { get; }
+
+        protected internal Point Top { get; }
 
         public Pyramid(Point[] points)
         {
             if (points.Length != 5)
             {
-                throw new Exception("Ti sho, dibil voobsche, matematicheskoe ubogzestvo");
+                throw new Exception("Wrong number of points. Need 5 points.");
             }
-            
-            Init(points);
-            
-            var matrix = new Matrix(new []{_top - _base0, _top - _base1, _top - _base2});
+
+            if (Util.IsOneLine(points))
+            {
+                throw new Exception("All points can't lie on one line.");
+            }
+
+            Matrix matrix;
+            for (var i = 0; i < 5; i++)
+            {
+                var p = points.Where((point, i1) => i1 != i).ToArray();
+                matrix = new Matrix(new[] {p[0] - p[1], p[0] - p[2], p[0] - p[3]});
+
+                if (Math.Abs(matrix.Determinant) < double.Epsilon)
+                {
+                    Base0 = p[0];
+                    Base1 = p[1];
+                    Base2 = p[2];
+                    Base3 = p[3];
+                    Top = points[i];
+                }
+            }
+
+            matrix = new Matrix(new[] {Top - Base0, Top - Base1, Top - Base2});
             if (Math.Abs(matrix.Determinant) < double.Epsilon)
             {
-                throw new Exception("The top lies on the same plane with the base");
+                throw new Exception("The top can't lies on the same plane with the base!");
+            }
+
+            if (Util.IsOneLine(new[] {Base0, Base1, Base2, Base3}))
+            {
+                throw new Exception("Bases points can't lie on one line");
             }
         }
 
         // Divide the quadrangle into two triangles and calculate the areas using the Heron formula
-        public double Square => Util.GetTriangleSquare(_base0, _base1, _base2) + Util.GetTriangleSquare(_base1, _base2, _base3);
-        
+        public double Square =>
+            Math.Round(Util.GetTriangleSquare(Base0, Base1, Base2) + Util.GetTriangleSquare(Base1, Base2, Base3), 5,
+                MidpointRounding.AwayFromZero);
+
         public double Volume
         {
             get
             {
-                var a = (_base2.Y - _base1.Y) * (_base3.Z - _base1.Z) - (_base2.Z - _base1.Z) * (_base3.Y - _base1.Y);
-                var b = (_base2.Z - _base1.Z) * (_base3.X - _base1.X) - (_base2.X - _base1.X) * (_base3.Z - _base1.Z);
-                var c = (_base2.X - _base1.X) * (_base3.Y - _base1.Y) - (_base2.Y - _base1.Y) * (_base3.X - _base1.X);
-                var d = -_base1.X * a - _base1.Y * b - _base1.Z * c;
-                var h = Math.Abs(a * _top.X + b * _top.Y + c * _top.Z + d) / Math.Sqrt(a * a + b * b + c * c);
+                var a = (Base2.Y - Base1.Y) * (Base3.Z - Base1.Z) - (Base2.Z - Base1.Z) * (Base3.Y - Base1.Y);
+                var b = (Base2.Z - Base1.Z) * (Base3.X - Base1.X) - (Base2.X - Base1.X) * (Base3.Z - Base1.Z);
+                var c = (Base2.X - Base1.X) * (Base3.Y - Base1.Y) - (Base2.Y - Base1.Y) * (Base3.X - Base1.X);
+                var d = -Base1.X * a - Base1.Y * b - Base1.Z * c;
+                var h = Math.Abs(a * Top.X + b * Top.Y + c * Top.Z + d) / Math.Sqrt(a * a + b * b + c * c);
                 return Square * h / 3;
             }
         }
 
-        private void Init(Point[] points)
+        public void SaveToFile(string nameFile)
         {
-            for (var i = 0; i < 5; i++)
+            using (var fstream = new StreamWriter(nameFile))
             {
-                var p = points.Where((point, i1) => i1 != i).ToArray();
-                var matrix = new Matrix(new[] {p[0] - p[1], p[0] - p[2], p[0] - p[3]});
-                
-                if (Math.Abs(matrix.Determinant) < double.Epsilon)
-                {
-                    _base0 = p[0];
-                    _base1 = p[1];
-                    _base2 = p[2];
-                    _base3 = p[3];
-                    _top = points[i];
-                }
+                fstream.Write(JsonSerializer.Serialize(new PyramidProvider(this)));
+            }
+        }
+
+        public static Pyramid LoadFromFile(string nameFile)
+        {
+            using (var fstream = new StreamReader(nameFile))
+            {
+                return JsonSerializer.Deserialize<PyramidProvider>(fstream.ReadToEnd()).GetPyramid();
             }
         }
     }
