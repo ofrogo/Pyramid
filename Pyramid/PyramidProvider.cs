@@ -12,6 +12,10 @@
 
         public Point Top { get; set; }
 
+        public PyramidProvider()
+        {
+        }
+
         public PyramidProvider(Pyramid pyramid)
         {
             Base0 = pyramid.Base0;

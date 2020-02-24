@@ -8,6 +8,10 @@
 
         public double Z { get; }
 
+        public Point()
+        {
+            
+        }
         public Point(double x, double y, double z)
         {
             X = x;
