@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Pyramid
 {
-    public class Util
+    public static class Util
     {
         public static double GetDistanceBetweenTwoPoints(Point p1, Point p2)
         {

@@ -1,4 +1,7 @@
-﻿namespace Pyramid
+﻿using System.IO;
+using System.Text.Json;
+
+namespace Pyramid
 {
     public class PyramidProvider
     {
@@ -28,6 +31,24 @@
         public Pyramid GetPyramid()
         {
             return new Pyramid(new[] {Base0, Base1, Base2, Base3, Top});
+        }
+
+        public void SaveToFile(string nameFile)
+        {
+            using var fstream = new StreamWriter(nameFile);
+            
+            fstream.Write(ToJson());
+        }
+
+        public static Pyramid LoadFromFile(string nameFile)
+        {
+            using var fstream = new StreamReader(nameFile);
+            return JsonSerializer.Deserialize<PyramidProvider>(fstream.ReadToEnd()).GetPyramid();
+        }
+
+        public string ToJson()
+        {
+            return JsonSerializer.Serialize(this);
         }
     }
 }

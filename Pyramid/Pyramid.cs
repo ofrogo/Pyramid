@@ -7,15 +7,15 @@ namespace Pyramid
 {
     public class Pyramid
     {
-        protected internal Point Base0 { get; set; }
+        public Point Base0 { get; private set; }
 
-        protected internal Point Base1 { get; set; }
+        public Point Base1 { get; private set; }
 
-        protected internal Point Base2 { get; set; }
+        public Point Base2 { get; private set; }
 
-        protected internal Point Base3 { get; set; }
+        public Point Base3 { get; private set; }
 
-        protected internal Point Top { get; set; }
+        public Point Top { get; private set; }
 
         public Pyramid(Point[] points)
         {
@@ -72,22 +72,6 @@ namespace Pyramid
                 var d = -Base1.X * a - Base1.Y * b - Base1.Z * c;
                 var h = Math.Abs(a * Top.X + b * Top.Y + c * Top.Z + d) / Math.Sqrt(a * a + b * b + c * c);
                 return Square * h / 3;
-            }
-        }
-
-        public void SaveToFile(string nameFile)
-        {
-            using (var fstream = new StreamWriter(nameFile))
-            {
-                fstream.Write(JsonSerializer.Serialize(new PyramidProvider(this)));
-            }
-        }
-
-        public static Pyramid LoadFromFile(string nameFile)
-        {
-            using (var fstream = new StreamReader(nameFile))
-            {
-                return JsonSerializer.Deserialize<PyramidProvider>(fstream.ReadToEnd()).GetPyramid();
             }
         }
 
